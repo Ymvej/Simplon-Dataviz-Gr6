@@ -1,0 +1,5 @@
+#Synthese du nombre de ligne par fichier
+declaration_avantage_2020_02_19_04_00.csv: 11297937 
+declaration_convention_2020_02_19_04_00.csv: 5058467
+declaration_remuneration_2020_02_19_04_00.csv: 453081
+entreprise_2020_02_19_04_00.csv: 3154
