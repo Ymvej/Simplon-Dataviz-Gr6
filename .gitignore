@@ -1,2 +1,4 @@
 # ignoring  database
 /Base
+/__pycache__
+/.vscode
