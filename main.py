@@ -196,13 +196,13 @@ def dash_runtime():
 # ---------- Execution ----------
 
 # Maps
-# rconv = comparator3000(D_Convention, 'conv_montant_ttc')
-# ravant = comparator3000(D_avantage, 'avant_montant_ttc')
-# rremu = comparator3000(D_Remuneration, 'remu_montant_ttc')
+rconv = comparator3000(D_Convention, 'conv_montant_ttc')
+ravant = comparator3000(D_avantage, 'avant_montant_ttc')
+rremu = comparator3000(D_Remuneration, 'remu_montant_ttc')
 
-# get_map(rconv, 'Conventions', 'Valeur totale des conventions passées par département en €')
-# get_map(ravant, 'Avantage', 'Montant total des avantages accordés par département en €')
-# get_map(rremu, 'Rémunérations', 'Montant total des salaires versés par département en €')
+get_map(rconv, 'Conventions', 'Valeur totale des conventions passées par département en €')
+get_map(ravant, 'Avantage', 'Montant total des avantages accordés par département en €')
+get_map(rremu, 'Rémunérations', 'Montant total des salaires versés par département en €')
 
-#Dash
+# Dash
 dash_runtime()
