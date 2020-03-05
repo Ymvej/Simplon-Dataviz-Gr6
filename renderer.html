@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {box-sizing: border-box}
+
+/* Set height of body and the document to 100% */
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial;
+}
+
+/* Style tab links */
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 25%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: white;
+  display: none;
+  padding: 100px 20px;
+  height: 100%;
+}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+
+/* Style the tab content */
+.tabcontent2 {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+#Dash {background-color: white;}
+#Cartes {background-color: white;}
+#Notebook {background-color: white;}
+#Rapport {background-color: white;}
+</style>
+</head>
+<body>
+
+<button class="tablink" onclick="openPage('Dash', this, 'gray')" id="defaultOpen">Dash</button>
+<button class="tablink" onclick="openPage('Cartes', this, 'gray')">Cartes</button>
+<button class="tablink" onclick="openPage('Notebook', this, 'gray')">Notebook</button>
+<button class="tablink" onclick="openPage('Rapport', this, 'gray')">Rapport</button>
+
+
+<div id="Dash" class="tabcontent">
+  <iframe src="http://127.0.0.1:8050/"
+  id = "inlineFrameDash"
+  title = "Dash Runtime"
+  width = "1920"
+  height="1080">
+</iframe>
+</div>
+
+<div id="Cartes" class="tabcontent">
+  <div class="tab">
+    <button class="tablinks2" onclick="openCity(event, 'test')">test</button>
+    <button class="tablinks2" onclick="openCity(event, 'Convention')">Conventions</button>
+    <button class="tablinks2" onclick="openCity(event, 'Avantages')">Avantages</button>
+    <button class="tablinks2" onclick="openCity(event, 'Rémunérations')">Remunérations</button>
+  </div>
+  
+  <!-- Tab content -->
+  <div id="Conventions" class="tabcontent2">
+    <iframe src="file:///home/samuel/Workspace/Projects/Briefs/repar/Simplon-Dataviz-Gr6/Conventions.html"
+    id = "Conventions"
+    title = "Pygal Map 1"
+    width = "100%"
+    height = "2160">
+  </iframe>
+  </div>
+  
+  <div id="Avantages" class="tabcontent2">
+    <iframe src="file:///home/samuel/Workspace/Projects/Briefs/repar/Simplon-Dataviz-Gr6/Avantage.html"
+    id = "Avantages"
+    title = "Pygal Map 2"
+    width = "100%"
+    height = "2160">
+  </iframe>
+  </div>
+  
+  <div id="Rémunérations" class="tabcontent2">
+    <iframe src="file:///home/samuel/Workspace/Projects/Briefs/repar/Simplon-Dataviz-Gr6/R%C3%A9mun%C3%A9rations.html"
+    id = "Rémunérations"
+    title = "Pygal Map 3"
+    width = "100%"
+    height = "2160">
+  </iframe>
+  </div>
+</iframe>
+</div>
+
+<div id="Notebook" class="tabcontent">
+  
+</div>
+
+<div id="Rapport" class="tabcontent">
+  <h3>About</h3>
+  <p>Who we are and what we do.</p>
+</div>
+
+<script>
+function openPage(pageName,elmnt,color) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].style.backgroundColor = "";
+  }
+  document.getElementById(pageName).style.display = "block";
+  elmnt.style.backgroundColor = color;
+}
+
+function openCity(evt, cityName) {
+  var i2, tabcontent2, tablinks2;
+  tabcontent2 = document.getElementsByClassName("tabcontent2");
+  for (i2 = 0; i2 < tabcontent2.length; i2++) {
+    tabcontent2[i2].style.display = "none";
+  }
+  tablinks2 = document.getElementsByClassName("tablinks2");
+  for (i2 = 0; i2 < tablinks2.length; i2++) {
+    tablinks2[i2].className = tablinks2[i2].className.replace(" active", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+</script>
+</script>
+</body>
+</html> 

@@ -1,14 +1,22 @@
 # ---------- Init -----------
 import pandas as pd
+
 import time
 import os
+
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import plotly.express as px
+
 import pygal # Python SVG graph plotting library
 from pygal.style import NeonStyle # sexy af
 
+os.system('clear')
 
 # Constants containing the columns we want to fetch from the csv's.
 COLS_AVANTAGE = ['ligne_identifiant', 'denomination_sociale', 'categorie', 'qualite', 'benef_codepostal', 'benef_ville', 'pays', 'benef_titre_libelle', 'benef_speicalite_libelle', 'benef_etablissement_codepostal', 'ligne_type', 'avant_date_signature', 'avant_montant_ttc']
-COLS_CONVENTION = ['ligne_identifiant', 'denomination_sociale', 'categorie', 'qualite', 'benef_codepostal', 'benef_ville', 'pays', 'benef_titre_libelle', 'benef_speicalite_libelle', 'benef_etablissement_codepostal', 'ligne_type', 'conv_date_signature', 'conv_montant_ttc']
+COLS_CONVENTION = ['ligne_identifiant', 'denomination_sociale', 'categorie', 'qualite', 'benef_codepostal', 'benef_ville', 'pays', 'benef_titre_libelle', 'benef_speicalite_libelle', 'benef_etablissement_codepostal', 'ligne_type', 'conv_date_signature', 'conv_objet', 'conv_montant_ttc']
 COLS_REMUNERATION = ['entreprise_identifiant', 'denomination_sociale', 'benef_categorie_code', 'qualite', 'benef_codepostal', 'pays', 'benef_titre_libelle', 'benef_speicalite_libelle', 'benef_etablissement_codepostal', 'remu_date', 'remu_montant_ttc']
 COLS_ENTREPRISE = ['pays','secteur','code_postal','ville']
 
@@ -45,6 +53,7 @@ success = time.perf_counter()
 import_time = int(success - start) 
 print('-----------------------')
 print('All csv successfully imported in %s seconds.\n\n'%(import_time))
+
 
 
 # ---------- Functions ----------
@@ -105,7 +114,7 @@ def comparator3000(df, fetch):
     success = time.perf_counter()
     ns = int(success - start) 
     print('Succesfully imported %s from %s in %s seconds | %s rows had one or more missing values and were omitted | %s rows were usable\n'%(fetch, df.name, ns, sc, fc))        
-    print(dic)
+
 
     return dic
 
@@ -118,26 +127,82 @@ def get_map(dic, title, subtitle):
     '''
 
     # Core
-    fr_chart = pygal.maps.fr.Departments(human_readable=True, width=1080, height=1080, style=NeonStyle)
+    fr_chart = pygal.maps.fr.Departments(human_readable=True, style=NeonStyle)
     fr_chart.title = str(title)
     fr_chart.add(str(subtitle), dic)
 
     # Renders it and outputs to file in the current working directory
-    fr_chart.render_to_file('%s.html'%(title), 555)
+    fr_chart.render_to_file('%s.html'%(title))
+
+def dash_runtime():
+
+    # Import feuille de style CSS
+    print('Styling...')
+    external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+    app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+    # Définition des plots à afficher
+    print('fig1 start')
+    fig1 = px.histogram(D_Remuneration, x="qualite", y="remu_montant_ttc", histfunc="avg", title = 'Moyenne des rémunérations par qualité', labels =    {'qualite':'Qualité' , 'remu_montant_ttc':'Montant moyen TTC de la rémunération'}).update_xaxes(categoryorder="total descending")
+    print('fig1 done')
+
+    print('fig2 start')
+    fig2 = px.histogram(D_avantage, x="qualite", y="avant_montant_ttc", histfunc="avg", title = 'Moyenne des avantages accordés par qualité', labels =    {'qualite':'Qualité' , 'avant_montant_ttc':'Montant moyen TTC des avantages accordés'}).update_xaxes(categoryorder="total descending")
+    print('fig2 done')
+
+    print('fig3 start')
+    fig3 = px.histogram(D_Convention, x="conv_objet", y="conv_montant_ttc", histfunc="avg", title = 'Moyenne des conventions signées par type', labels =    {'qualite':'Type de convention' , 'conv_montant_ttc':'Montant moyen TTC des conventions signées'}).update_xaxes(categoryorder="total descending")
+    print('fig3 done')
 
 
+    # Layout Dash
+    app.layout = html.Div(children=[
+        html.H1(children='Transparence Santé'),
 
-# Execution
+        html.Div(children='''
+            Visualisation de données à partir de la base de données publique "Transparence - Santé"
+        ''' ),
+        # Affichage des plots définis plus haut 
+        dcc.Graph(
+            id = 'Remun',
+            figure = fig1
+        ),
 
-rconv = comparator3000(D_Convention, 'conv_montant_ttc')
-ravant = comparator3000(D_avantage, 'avant_montant_ttc')
-rremu = comparator3000(D_Remuneration, 'remu_montant_ttc')
+        html.Div(children='''
+            Visualisation de données à partir de la base de données publique "Transparence - Santé"
+        ''' ),
+        # Affichage des plots définis plus haut 
+        dcc.Graph(
+            id = 'Avant',
+            figure = fig2
+        ),
+
+        html.Div(children='''
+            Visualisation de données à partir de la base de données publique "Transparence - Santé"
+        ''' ),
+        # Affichage des plots définis plus haut 
+        dcc.Graph(
+            id = 'Conv',
+            figure = fig3
+
+        )
+    ])
 
 
+    # Run Dash server
+    if __name__ == '__main__':
+        app.run_server(debug=True)
 
+# ---------- Execution ----------
 
-get_map(rconv, 'Conventions', 'Valeur totale des conventions passées par département en €')
-get_map(ravant, 'Avantage', 'Montant total des avantages accordés par département en €')
-get_map(rremu, 'Rémunérations', 'Montant total des salaires versés par département en €')
+# Maps
+# rconv = comparator3000(D_Convention, 'conv_montant_ttc')
+# ravant = comparator3000(D_avantage, 'avant_montant_ttc')
+# rremu = comparator3000(D_Remuneration, 'remu_montant_ttc')
 
+# get_map(rconv, 'Conventions', 'Valeur totale des conventions passées par département en €')
+# get_map(ravant, 'Avantage', 'Montant total des avantages accordés par département en €')
+# get_map(rremu, 'Rémunérations', 'Montant total des salaires versés par département en €')
 
+#Dash
+dash_runtime()
