@@ -4,8 +4,7 @@ import pandas as pd
 import time
 import os
 import pygal
-import progressbar
-
+from progress.bar import Bar
 
 
 Col_avantage = ['ligne_identifiant', 'denomination_sociale', 'categorie', 'qualite', 'benef_codepostal', 'benef_ville', 'pays', 'benef_titre_libelle', 'benef_speicalite_libelle', 'benef_etablissement_codepostal', 'ligne_type', 'avant_date_signature', 'avant_montant_ttc']
@@ -18,16 +17,17 @@ Col_entreprise = ['pays','secteur','code_postal','ville']
 start = time.perf_counter() # getting starting timestamp
 print('Starting import...\n\n')
 print('Importing D_avantage...')
-D_avantage = pd.read_csv("Base/declaration_avantage_2020_02_19_04_00.csv", sep = ";", usecols = Col_avantage)
+# D_avantage = pd.read_csv("Base/declaration_avantage_2020_02_19_04_00.csv", sep = ";", usecols = Col_avantage)
 print('D_avantage successfully imported. 3 more to go.')
 print('Importing D_Convention...')
 D_Convention = pd.read_csv("Base/declaration_convention_2020_02_19_04_00.csv", sep = ";", usecols = Col_convention)
+D_Convention.name = 'Conventions'
 print('D_Convention successfully imported. 2 more to go.')
 print('Importing D_Remuneration...')
-D_Remuneration = pd.read_csv("Base/declaration_remuneration_2020_02_19_04_00.csv", sep = ";", usecols = Col_remuneration)
+# D_Remuneration = pd.read_csv("Base/declaration_remuneration_2020_02_19_04_00.csv", sep = ";", usecols = Col_remuneration)
 print('D_Remuneration successfully imported. 1 more to go.')
 print('Importing Entreprise...')
-Entreprise = pd.read_csv("Base/entreprise_2020_02_19_04_00.csv", sep = ",", usecols = Col_entreprise)
+# Entreprise = pd.read_csv("Base/entreprise_2020_02_19_04_00.csv", sep = ",", usecols = Col_entreprise)
 print('Entreprise successfully imported.')
 success = time.perf_counter() # getting ending timestamp
 import_time = int(success - start) 
@@ -37,24 +37,21 @@ print('All csv successfully imported in %s seconds.'%(import_time))
 
 
 
-def comparator3000():
+def comparator3000(df, fetch):
     '''
 
     '''
-    print('Started.')
+    print('Started importing %s from %s.'%(fetch, df.name) )
     dic = dict()
+    bar = Bar('Processing...', suffix='%(percent)d%%')
     start = time.perf_counter()
-    q = list(D_Convention.index)
+    q = list(df.index)
     fc = 0
     sc = 0
     for i in q:
-        if i % 50553 == 0:
-            aa = int(i / 5055300 * 100) 
-            aa = str(aa)
-            print('%s %% processed.'%(aa))
-            
-        cp = D_Convention['benef_codepostal'][i]
-        ttc = D_Convention['conv_montant_ttc'][i]
+
+        cp = df['benef_codepostal'][i]
+        ttc = df[str(fetch)][i]
 
         cp = str(cp)
         cp = cp[:2]
@@ -72,7 +69,10 @@ def comparator3000():
 
         else:
             dic[cp] = ttc
-            
+
+        if i % 8500 == 0:
+            bar.next()
+    bar.finish()
 
     success = time.perf_counter()
     ns = int(success - start) 
@@ -80,20 +80,17 @@ def comparator3000():
     
     
 
-    print('Failed %s times | Succeeded %s times in %s seconds'%(sc, fc, ns))        
+    print('Succesfully imported %s from %s in %s seconds | %s rows had one or more missing values and were omitted | %s rows were usable'%(fetch, df, ns, sc, fc))        
 
     return dic
 
 
-jpp = comparator3000()
+jpp = comparator3000(D_Convention, 'conv_montant_ttc')
 
-
-
-fr_chart = pygal.maps.fr.Departments(human_readable=True)
-fr_chart.title = 'Conventions signées par departement'
-fr_chart.add('In 2011', jpp)
-fr_chart.render_in_browser()
-
-
-
-
+def get_map(dic, title, subtitle):
+    fr_chart = pygal.maps.fr.Departments(human_readable=True)
+    fr_chart.title = str(title)
+    fr_chart.add(str(subtitle), jpp)
+    fr_chart.render_in_browser()
+    
+get_map(jpp, 'Test', 'Subtest')
